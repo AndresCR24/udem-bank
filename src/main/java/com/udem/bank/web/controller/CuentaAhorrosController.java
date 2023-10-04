@@ -36,7 +36,20 @@ public class CuentaAhorrosController {
     @PostMapping
     public ResponseEntity<CuentaAhorrosEntity> add(@RequestBody CuentaAhorrosEntity cuenta)
     {
-        return ResponseEntity.ok(this.cuentaAhorrosService.save(cuenta));
+        if (cuenta.getId() == null || !this.cuentaAhorrosService.exists(cuenta.getId()))
+        {
+            return ResponseEntity.ok(this.cuentaAhorrosService.save(cuenta));
+        }
+        return ResponseEntity.badRequest().build();
     }
+    @PutMapping
+    public ResponseEntity<CuentaAhorrosEntity> update(@RequestBody CuentaAhorrosEntity cuentaAhorros)
+    {
+        if(cuentaAhorros.getId() != null && this.cuentaAhorrosService.exists(cuentaAhorros.getId()))
+        {
+            return ResponseEntity.ok(this.cuentaAhorrosService.save(cuentaAhorros));
+        }
 
+        return ResponseEntity.badRequest().build();
+    }
 }
