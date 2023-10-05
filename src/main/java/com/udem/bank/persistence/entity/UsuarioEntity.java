@@ -19,9 +19,10 @@ import java.util.List;
 public class UsuarioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true)
     private Integer id;
 
-    @Column(name = "id_cuenta_ahorros", nullable = false)
+    @Column(name = "id_cuenta_ahorros", nullable = false, unique = true)
     private Integer idCuentaAhorros;
 
     @Column(nullable = false, length = 30)
@@ -40,7 +41,7 @@ public class UsuarioEntity {
 
     //Relaciones
     @OneToOne
-    @JoinColumn(name = "id_cuenta_ahorros", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "id_cuenta_ahorros", referencedColumnName = "id", insertable = false, updatable = false, unique = true)
     private CuentaAhorrosEntity cuentaAhorros;
 
     @OneToMany(mappedBy = "usuarioPrestamo")

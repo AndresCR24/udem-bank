@@ -39,4 +39,5 @@ public class UsuarioService {
     {
         return this.usuarioRepository.existsById(idUsuario);
     }
+
 }

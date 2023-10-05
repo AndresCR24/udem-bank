@@ -1,5 +1,6 @@
 package com.udem.bank.web.controller;
 
+import com.udem.bank.persistence.entity.CuentaAhorrosEntity;
 import com.udem.bank.persistence.entity.UsuarioEntity;
 import com.udem.bank.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UsuarioController {
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
-
+    //Operaciones basicas CRUD
     @GetMapping
     public ResponseEntity<List<UsuarioEntity>> getAll()
     {
@@ -35,5 +36,17 @@ public class UsuarioController {
     public ResponseEntity<UsuarioEntity> add(@RequestBody UsuarioEntity usuario)
     {
         return ResponseEntity.ok(this.usuarioService.save(usuario));
+    }
+
+    //controlador para actualizar
+    @PutMapping
+    public ResponseEntity<UsuarioEntity> update(@RequestBody UsuarioEntity usuario)
+    {
+        if(usuario.getId() != null && this.usuarioService.exists(usuario.getId()))
+        {
+            return ResponseEntity.ok(this.usuarioService.save(usuario));
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 }

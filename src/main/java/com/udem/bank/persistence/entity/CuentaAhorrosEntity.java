@@ -19,6 +19,7 @@ public class CuentaAhorrosEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true)
     private Integer id;
 
     @Column(name = "saldo_actual", nullable = false, columnDefinition = "DECIMAL(15,2)")
