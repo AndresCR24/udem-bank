@@ -39,4 +39,9 @@ public class PrestamoUsuarioService {
     {
         return this.prestamosUsuarioRepository.existsById(idPrestamoUsuario);
     }
+
+    public void deletePrestamo(int idPrestamo){
+        this.prestamosUsuarioRepository.deleteById(idPrestamo);
+    }
+
 }

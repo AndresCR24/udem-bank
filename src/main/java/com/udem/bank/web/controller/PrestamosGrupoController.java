@@ -51,4 +51,13 @@ public class PrestamosGrupoController {
 
         return ResponseEntity.badRequest().build();
     }
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@PathVariable int idPrestamoGrupo){
+        if (prestamoGrupoService.exists(idPrestamoGrupo)){
+            prestamoGrupoService.deletePrestamoGrupo(idPrestamoGrupo);
+            ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+
+    }
 }

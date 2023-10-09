@@ -39,4 +39,8 @@ public class CuentaAhorrosService {
     {
         return this.cuentaAhorrosRepository.existsById(idCuenta);
     }
+
+    public void deleteCuentaAhorros(int idCuentaAhorros){
+        this.cuentaAhorrosRepository.deleteById(idCuentaAhorros);
+    }
 }

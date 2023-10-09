@@ -1,5 +1,6 @@
 package com.udem.bank.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,5 +57,9 @@ public class UsuarioEntity {
             name = "grupo_x_usuario", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "id_grupo", referencedColumnName = "id")
     )
+    @JsonIgnore
     private List<GrupoAhorroEntity> grupoAhorro;
+
+    @OneToMany(mappedBy = "usuarioInvitaciones")
+    private List<InvitacionesEntity> ivitacionesUsuario;
 }

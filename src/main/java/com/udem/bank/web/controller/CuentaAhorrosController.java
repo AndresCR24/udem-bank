@@ -52,4 +52,12 @@ public class CuentaAhorrosController {
 
         return ResponseEntity.badRequest().build();
     }
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@PathVariable int idCuentaAhorros){
+        if (this.cuentaAhorrosService.exists(idCuentaAhorros)){
+            this.cuentaAhorrosService.deleteCuentaAhorros(idCuentaAhorros);
+            ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
 }

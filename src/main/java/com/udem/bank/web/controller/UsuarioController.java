@@ -49,4 +49,12 @@ public class UsuarioController {
 
         return ResponseEntity.badRequest().build();
     }
+    @DeleteMapping("/{id_usuario}")
+    public ResponseEntity<Void> delete(@PathVariable int idUsuario){
+        if (this.usuarioService.exists(idUsuario)){
+            this.usuarioService.deleteUsuario(idUsuario);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
 }

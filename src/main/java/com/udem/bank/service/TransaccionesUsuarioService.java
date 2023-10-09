@@ -13,6 +13,7 @@ public class TransaccionesUsuarioService {
 
     private final TransaccionesUsuarioRepository transaccionesUsuarioRepository;
 
+
     @Autowired
     public TransaccionesUsuarioService(TransaccionesUsuarioRepository transaccionesUsuarioRepository) {
         this.transaccionesUsuarioRepository = transaccionesUsuarioRepository;
@@ -38,5 +39,9 @@ public class TransaccionesUsuarioService {
     public boolean exists(int idTransaccionUsuario)
     {
         return this.transaccionesUsuarioRepository.existsById(idTransaccionUsuario);
+    }
+
+    public void deleteTransaccion(int idTransaccion){
+        this.transaccionesUsuarioRepository.deleteById(idTransaccion);
     }
 }

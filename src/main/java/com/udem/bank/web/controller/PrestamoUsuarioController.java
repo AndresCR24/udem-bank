@@ -42,6 +42,7 @@ public class PrestamoUsuarioController {
         }
         return ResponseEntity.badRequest().build();
     }
+
     @PutMapping
     public ResponseEntity<PrestamoUsuarioEntity> update(@RequestBody PrestamoUsuarioEntity prestamoUsuario)
     {
@@ -50,6 +51,14 @@ public class PrestamoUsuarioController {
             return ResponseEntity.ok(this.prestamoUsuarioService.save(prestamoUsuario));
         }
 
+        return ResponseEntity.badRequest().build();
+    }
+    @DeleteMapping
+    public ResponseEntity<Void>delete(@PathVariable int idPrestamo){
+        if (this.prestamoUsuarioService.exists(idPrestamo)){
+            this.prestamoUsuarioService.deletePrestamo(idPrestamo);
+            return ResponseEntity.ok().build();
+        }
         return ResponseEntity.badRequest().build();
     }
 }

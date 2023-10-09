@@ -39,4 +39,8 @@ public class GrupoAhorrosService {
     {
         return this.grupoAhorroRepository.existsById(idCuenta);
     }
+
+    public void deleteGrupoAhorro(int idGrupo){
+        this.grupoAhorroRepository.deleteById(idGrupo);
+    }
 }

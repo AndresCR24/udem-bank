@@ -40,4 +40,8 @@ public class UsuarioService {
         return this.usuarioRepository.existsById(idUsuario);
     }
 
+    public void deleteUsuario(int idUsuario){
+        this.usuarioRepository.deleteById(idUsuario);
+    }
+
 }

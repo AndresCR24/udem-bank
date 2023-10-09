@@ -27,6 +27,10 @@ public class CuentaAhorrosEntity {
 
     @Column(name = "saldo_inicial", nullable = false, columnDefinition = "DECIMAL(15,2)")
     private BigDecimal saldoInicial;
+    @PrePersist
+    public void prePersist() {
+        this.saldoInicial = BigDecimal.ZERO;
+    }
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

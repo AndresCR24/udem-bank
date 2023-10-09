@@ -52,4 +52,12 @@ public class TransaccionesUsuarioController {
 
         return ResponseEntity.badRequest().build();
     }
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@PathVariable int idTransaccion){
+        if (this.transaccionesUsuarioService.exists(idTransaccion)){
+            this.transaccionesUsuarioService.deleteTransaccion(idTransaccion);
+            ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
 }
