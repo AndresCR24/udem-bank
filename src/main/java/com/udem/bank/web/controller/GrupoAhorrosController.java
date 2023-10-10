@@ -71,18 +71,16 @@ public class GrupoAhorrosController
         return ResponseEntity.ok(this.grupoXUsuarioService.crearGrupoConUsuario(grupoAhorro, idUsuario));
 
     }
-    //Agregar usuario a un grupo
-    @PutMapping("/{grupoId}/addUsuario/{usuarioId}")
-    public ResponseEntity<Void> addUsuarioToGrupo(@PathVariable Integer grupoId, @PathVariable Integer usuarioId)
-    {
-        try
-        {
-            grupoXUsuarioService.addUsuarioToGrupo(usuarioId, grupoId);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e)
-        {
-            return ResponseEntity.badRequest().build();
+    //Agregar usaurios a un grupo de ahorro con limite de 3 grupos de ahorro
+    @PutMapping("/asociarUsuario/{idUsuario}/{idGrupo}")
+    public ResponseEntity<String> asociarUsuarioAGrupo(@PathVariable Integer idUsuario, @PathVariable Integer idGrupo) {
+        boolean success = grupoXUsuarioService.asociarUsuarioAGrupo(idUsuario, idGrupo);
+
+        if (!success) {
+            return ResponseEntity.badRequest().body("El usuario ya está asociado a 3 grupos de ahorro.");
         }
+
+        return ResponseEntity.ok("Usuario asociado exitosamente.");
     }
 
 

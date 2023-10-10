@@ -43,4 +43,7 @@ public class GrupoAhorroEntity {
 
     @OneToMany(mappedBy = "grupoAhorro")
     private List<PrestamoGrupoEntity> prestamoGrupo;
+
+    @OneToMany(mappedBy = "grupoAhorroInvitacion")
+    private List<InvitacionesEntity> invitacionesGrupo;
 }
