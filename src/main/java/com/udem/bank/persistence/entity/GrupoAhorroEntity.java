@@ -39,11 +39,13 @@ public class GrupoAhorroEntity {
 
     //Relaciones
     @ManyToMany(mappedBy = "grupoAhorro")
+
     private List<UsuarioEntity> usuarios;
 
     @OneToMany(mappedBy = "grupoAhorro")
     private List<PrestamoGrupoEntity> prestamoGrupo;
 
     @OneToMany(mappedBy = "grupoAhorroInvitacion")
+    @JsonIgnore
     private List<InvitacionesEntity> invitacionesGrupo;
 }

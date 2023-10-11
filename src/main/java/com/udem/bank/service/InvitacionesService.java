@@ -2,21 +2,29 @@ package com.udem.bank.service;
 
 import com.udem.bank.persistence.entity.GrupoAhorroEntity;
 import com.udem.bank.persistence.entity.InvitacionesEntity;
+import com.udem.bank.persistence.entity.UsuarioEntity;
+import com.udem.bank.persistence.repository.GrupoAhorroRepository;
 import com.udem.bank.persistence.repository.InvitacionesRepository;
+import com.udem.bank.persistence.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class InvitacionesService
 {
     private final InvitacionesRepository invitacionesRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final GrupoAhorroRepository grupoAhorroRepository;
 
     @Autowired
-    public InvitacionesService(InvitacionesRepository invitacionesRepository) {
+    public InvitacionesService(InvitacionesRepository invitacionesRepository, UsuarioRepository usuarioRepository, GrupoAhorroRepository grupoAhorroRepository) {
         this.invitacionesRepository = invitacionesRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.grupoAhorroRepository = grupoAhorroRepository;
     }
 
     //Devolver lista de cuentas
@@ -61,5 +69,35 @@ public class InvitacionesService
 
         // Guardar la nueva invitación en la base de datos
         return invitacionesRepository.save(nuevaInvitacion);
+    }
+
+    //Usar las invitaciones para entrar a un grupo
+
+    public boolean unirseAlGrupo(String codigoInvitacion, Integer idUsuario) {
+        Optional<InvitacionesEntity> optionalInvitacion = invitacionesRepository.findByCodigoInvitacion(codigoInvitacion);
+
+        if (!optionalInvitacion.isPresent() || optionalInvitacion.get().isUsado()) {
+            return false;
+        }
+        InvitacionesEntity invitacion = optionalInvitacion.get();
+
+        UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            return false;
+        }
+
+        GrupoAhorroEntity grupo = grupoAhorroRepository.findById(invitacion.getIdGrupoAhorro()).orElse(null);
+        if (grupo == null) {
+            return false;
+        }
+
+        usuario.getGrupoAhorro().add(grupo);
+        usuarioRepository.save(usuario);
+
+        // Opcional: marcar invitación como usada
+        invitacion.setUsado(true);
+        invitacionesRepository.save(invitacion);
+
+        return true;
     }
 }

@@ -5,6 +5,7 @@ import com.udem.bank.persistence.entity.PrestamoUsuarioEntity;
 import com.udem.bank.persistence.entity.TransaccionesUsuarioEntity;
 import com.udem.bank.persistence.entity.UsuarioEntity;
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
+import com.udem.bank.persistence.repository.InvitacionesRepository;
 import com.udem.bank.persistence.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,14 @@ public class GrupoXUsuarioService {
 
     private final GrupoAhorroRepository grupoAhorroRepository;
 
+    //Inyectar invitaciones para poder relacionarlas con los grupos
+    private final InvitacionesRepository invitacionesRepository;
+
     @Autowired
-    public GrupoXUsuarioService(UsuarioRepository usuarioRepository, GrupoAhorroRepository grupoAhorroRepository) {
+    public GrupoXUsuarioService(UsuarioRepository usuarioRepository, GrupoAhorroRepository grupoAhorroRepository, InvitacionesRepository invitacionesRepository) {
         this.usuarioRepository = usuarioRepository;
         this.grupoAhorroRepository = grupoAhorroRepository;
+        this.invitacionesRepository = invitacionesRepository;
     }
 
     public GrupoAhorroEntity crearGrupoConUsuario(GrupoAhorroEntity grupo, Integer idUsuario) {
@@ -84,8 +89,7 @@ public class GrupoXUsuarioService {
         return true;
     }
 
-    //Realizar una transaccion al grupo
-
+    //Servicio para que un usuario acepte una invitacion
 
 
 }

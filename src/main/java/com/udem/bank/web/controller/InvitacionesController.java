@@ -71,4 +71,14 @@ public class InvitacionesController
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    //Controlador para que un usuario entre con la invitacion al grupo
+    @PutMapping("/unirse/{codigoInvitacion}/usuario/{idUsuario}")
+    public ResponseEntity<Boolean> unirseAlGrupo(@PathVariable String codigoInvitacion, @PathVariable Integer idUsuario) {
+        boolean resultado = invitacionesService.unirseAlGrupo(codigoInvitacion, idUsuario);
+        if (!resultado) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        return ResponseEntity.ok(true);
+    }
 }

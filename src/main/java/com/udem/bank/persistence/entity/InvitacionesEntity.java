@@ -30,6 +30,9 @@ public class InvitacionesEntity {
     @Column(name = "codigo_invitacion", unique = true, nullable = false)
     private String codigoInvitacion;
 
+    @Column(nullable = false, columnDefinition = "TINYINT")
+    private boolean usado;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
