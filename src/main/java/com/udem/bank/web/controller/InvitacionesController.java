@@ -3,6 +3,7 @@ package com.udem.bank.web.controller;
 import com.udem.bank.persistence.entity.InvitacionesEntity;
 import com.udem.bank.persistence.entity.PrestamoGrupoEntity;
 import com.udem.bank.service.InvitacionesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class InvitacionesController
 {
     private final InvitacionesService invitacionesService;
 
+    @Autowired
     public InvitacionesController(InvitacionesService invitacionesService) {
         this.invitacionesService = invitacionesService;
     }

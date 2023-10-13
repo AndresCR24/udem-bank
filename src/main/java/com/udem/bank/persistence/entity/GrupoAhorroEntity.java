@@ -48,4 +48,7 @@ public class GrupoAhorroEntity {
     @OneToMany(mappedBy = "grupoAhorroInvitacion")
     @JsonIgnore
     private List<InvitacionesEntity> invitacionesGrupo;
+
+    @OneToMany(mappedBy = "grupoAhorroTransacciones")
+    private List<TransaccionesUsuarioEntity> transaccionesUsuarioGrupo;
 }

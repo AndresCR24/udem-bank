@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/transaccionesusuario")
@@ -60,4 +62,20 @@ public class TransaccionesUsuarioController {
         }
         return ResponseEntity.badRequest().build();
     }
+
+    //Controlador para agregar una transaccion con un usuario
+    @PostMapping ("/depositar/{idUsuario}/grupo/{idGrupo}")
+    public ResponseEntity<TransaccionesUsuarioEntity> depositarMontoAGrupo(
+            @PathVariable Integer idUsuario,
+            @PathVariable Integer idGrupo,
+            @RequestBody Map<String, BigDecimal> requestMap) {
+        BigDecimal monto = requestMap.get("monto");
+        if (monto == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        TransaccionesUsuarioEntity transaccion = transaccionesUsuarioService.registrarDepositoAGrupo(idUsuario, idGrupo, monto);
+        return ResponseEntity.ok(transaccion);
+    }
+
+
 }
