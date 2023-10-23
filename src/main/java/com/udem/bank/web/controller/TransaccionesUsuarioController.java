@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.udem.bank.persistence.exception.FondosInsuficientesException;
+import com.udem.bank.persistence.exception.GrupoNoEncontradoException;
+import com.udem.bank.persistence.exception.UsuarioNoEncontradoException;
+
 import java.util.Map;
 
 @RestController
@@ -63,12 +68,10 @@ public class TransaccionesUsuarioController {
         return ResponseEntity.badRequest().build();
     }
 
-    //Controlador para agregar una transaccion con un usuario
-    @PostMapping ("/depositar/{idUsuario}/grupo/{idGrupo}")
-    public ResponseEntity<TransaccionesUsuarioEntity> depositarMontoAGrupo(
-            @PathVariable Integer idUsuario,
-            @PathVariable Integer idGrupo,
-            @RequestBody Map<String, BigDecimal> requestMap) {
+    @PostMapping("/depositar/{idUsuario}/grupo/{idGrupo}")
+    public ResponseEntity<TransaccionesUsuarioEntity> depositarMontoAGrupo(@PathVariable Integer idUsuario,
+                                                                           @PathVariable Integer idGrupo,
+                                                                           @RequestBody Map<String, BigDecimal> requestMap) {
         BigDecimal monto = requestMap.get("monto");
         if (monto == null) {
             return ResponseEntity.badRequest().body(null);
@@ -76,6 +79,5 @@ public class TransaccionesUsuarioController {
         TransaccionesUsuarioEntity transaccion = transaccionesUsuarioService.registrarDepositoAGrupo(idUsuario, idGrupo, monto);
         return ResponseEntity.ok(transaccion);
     }
-
 
 }

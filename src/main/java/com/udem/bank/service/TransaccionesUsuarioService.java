@@ -4,6 +4,9 @@ import com.udem.bank.persistence.entity.GrupoAhorroEntity;
 import com.udem.bank.persistence.entity.PrestamoUsuarioEntity;
 import com.udem.bank.persistence.entity.TransaccionesUsuarioEntity;
 import com.udem.bank.persistence.entity.UsuarioEntity;
+import com.udem.bank.persistence.exception.FondosInsuficientesException;
+import com.udem.bank.persistence.exception.GrupoNoEncontradoException;
+import com.udem.bank.persistence.exception.UsuarioNoEncontradoException;
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
 import com.udem.bank.persistence.repository.TransaccionesUsuarioRepository;
 import com.udem.bank.persistence.repository.UsuarioRepository;
@@ -29,65 +32,96 @@ public class TransaccionesUsuarioService {
     }
 
     //Devolver lista de cuentas
-    public List<TransaccionesUsuarioEntity> getAll()
-    {
+    public List<TransaccionesUsuarioEntity> getAll() {
         return this.transaccionesUsuarioRepository.findAll();
     }
 
     //Devolver usuario por su id
-    public TransaccionesUsuarioEntity get(int idUsuario)
-    {
+    public TransaccionesUsuarioEntity get(int idUsuario) {
         return this.transaccionesUsuarioRepository.findById(idUsuario).orElse(null);
     }
 
-    public TransaccionesUsuarioEntity save(TransaccionesUsuarioEntity transaccionesUsuario)
-    {
+    public TransaccionesUsuarioEntity save(TransaccionesUsuarioEntity transaccionesUsuario) {
         return this.transaccionesUsuarioRepository.save(transaccionesUsuario);
     }
+
     //Validar si un id existe
-    public boolean exists(int idTransaccionUsuario)
-    {
+    public boolean exists(int idTransaccionUsuario) {
         return this.transaccionesUsuarioRepository.existsById(idTransaccionUsuario);
     }
 
-    public void deleteTransaccion(int idTransaccion){
+    public void deleteTransaccion(int idTransaccion) {
         this.transaccionesUsuarioRepository.deleteById(idTransaccion);
     }
+    //Metodo anterior que genera fallos lo dejo de guia pra hacer futuros metodos (servicios) que pueden ser utiles
+    /*
+        @Transactional
+        public TransaccionesUsuarioEntity depositarEnGrupoAhorro(int idUsuario, int idGrupoAhorro, BigDecimal monto)
+                throws UsuarioNoEncontradoException, GrupoNoEncontradoException, FondosInsuficientesException {
 
-    //Realizar una transaccion
+            // Validar si el usuario existe
+            UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
+                    .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado"));
+
+            // Validar si el grupo de ahorro existe
+            GrupoAhorroEntity grupoAhorro = grupoAhorroRepository.findById(idGrupoAhorro)
+                    .orElseThrow(() -> new GrupoNoEncontradoException("Grupo de ahorro no encontrado"));
+
+            // Crear una nueva transacción de usuario
+            TransaccionesUsuarioEntity nuevaTransaccion = new TransaccionesUsuarioEntity();
+            nuevaTransaccion.setUsuarioTransacciones(usuario);
+            nuevaTransaccion.setGrupoAhorroTransacciones(grupoAhorro); // Asumiendo que tienes esta relación en tu entidad
+            nuevaTransaccion.setMonto(monto);
+            // Asumiendo que tienes algún tipo de propiedad para indicar el tipo de transacción
+            // nuevaTransaccion.setTipoTransaccion(TipoTransaccion.DEPOSITO);
+
+            // Aquí podrías insertar lógicas adicionales como verificar si el usuario tiene suficientes fondos, etc.
+
+            // Actualizar el saldo del grupo de ahorro. Esto presupone que tienes un método en tu entidad GrupoAhorroEntity para manejar el saldo.
+            GrupoAhorrosService.addFondos(monto); // Este método debería implementarse en tu entidad para ajustar el saldo
+
+            // Guardar las entidades actualizadas; el manejo de transacciones debería asegurar la integridad de este proceso
+            transaccionesUsuarioRepository.save(nuevaTransaccion);
+            grupoAhorroRepository.save(grupoAhorro);
+
+            return nuevaTransaccion;
+        }
+        */
     @Transactional
     public TransaccionesUsuarioEntity registrarDepositoAGrupo(Integer idUsuario, Integer idGrupo, BigDecimal monto) {
-        // Validaciones...
 
-        // Actualizar el saldo del usuario
+        // Actualizar saldo
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElse(null);
         if (usuario != null) {
             BigDecimal saldoActualUsuario = usuario.getCuentaAhorros().getSaldoActual();
             if (saldoActualUsuario.compareTo(monto) < 0) {
                 // Manejar el caso donde el usuario no tiene suficiente saldo
-              *  throw new InsufficientFundsException("No hay saldo suficiente");
+                //throw new InsufficientFundsException("No hay saldo suficiente");
             }
-           * usuario.setSaldo(saldoActualUsuario.subtract(monto)); // Resta el monto del saldo actual del usuario
+            usuario.getCuentaAhorros().setSaldoActual(saldoActualUsuario.subtract(monto)); // Resta el monto del saldo actual del usuario
             usuarioRepository.save(usuario);
         } else {
-            // Manejar el caso donde el usuario no es encontrado
-            throw new UserNotFoundException("Usuario no encontrado");
+            // Caso donde el usuario no es encontrado **Cuando terminemos**
+            //throw a UserNotFoundException("Usuario no encontrado");
         }
 
-        // Actualizar el saldo del grupo
+        // Actualizar el saldo
         GrupoAhorroEntity grupo = grupoAhorroRepository.findById(idGrupo).orElse(null);
         if (grupo != null) {
             BigDecimal saldoActualGrupo = grupo.getSaldo();
             grupo.setSaldo(saldoActualGrupo.add(monto));
             grupoAhorroRepository.save(grupo);
         } else {
-          *  throw new GroupNotFoundException("Grupo no encontrado");
+            //Manejar la exception **cuando terminemos el programa**
+            //throw a GroupNotFoundException("Grupo no encontrado");
         }
 
         TransaccionesUsuarioEntity transaccion = new TransaccionesUsuarioEntity();
-        // ... [resto del código para registrar la transacción]
+        transaccion.setIdUsuario(idUsuario);
+        transaccion.setIdGrupo(idGrupo); // Set el valor al id del grupo que corresponde
+        transaccion.setMonto(monto);
+
         return transaccionesUsuarioRepository.save(transaccion);
     }
-
 
 }
