@@ -53,6 +53,7 @@ public class PrestamoGrupoService {
         this.prestamoGrupoRepository.deleteById(idPrestamoGrupo);
     }
 
+    //Prestamo si se pertece a un grupo de ahorro
     @Transactional
     public PrestamoGrupoEntity solicitarPrestamo(Integer idUsuario, Integer idGrupo, BigDecimal monto, Integer plazoPrestamo) {
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
@@ -61,6 +62,9 @@ public class PrestamoGrupoService {
         GrupoAhorroEntity grupo = grupoAhorroRepository.findById(idGrupo)
                 .orElseThrow(() -> new IllegalArgumentException("Grupo de ahorro no encontrado"));
 
+        if (plazoPrestamo < 2){
+            throw new IllegalArgumentException("El prestamo debe ser minimo de 2 meses");
+        }
         // Validar si el usuario pertenece al grupo
         if (!usuario.getGrupoAhorro().contains(grupo)) {
             throw new IllegalArgumentException("El usuario no pertenece al grupo de ahorro");
@@ -72,13 +76,16 @@ public class PrestamoGrupoService {
         }
 
         // Propiedades del servicio
+        BigDecimal porcentaje = new BigDecimal("0.03");
+        BigDecimal montoAdicional = monto.multiply(porcentaje);
+        BigDecimal porcentajeAdicionalPrestamo = monto.add(montoAdicional);
         PrestamoGrupoEntity prestamo = new PrestamoGrupoEntity();
         prestamo.setIdUsuario(usuario.getId());
         prestamo.setIdGrupo(grupo.getId());
         prestamo.setMonto(monto);
         //El saldo que se el usuario debe pagar --> por ahora es el mismo que solicita
         //Modificarlo para que cobre intereses del 3%
-        prestamo.setSaldoPendiente(monto);
+        prestamo.setSaldoPendiente(porcentajeAdicionalPrestamo);
         //Se Obtiene del JSON la cantidad de meses a los que esta el plazo
         prestamo.setPlazoPrestamo(plazoPrestamo);
 
@@ -91,7 +98,7 @@ public class PrestamoGrupoService {
         prestamoGrupoRepository.save(prestamo);
         grupoAhorroRepository.save(grupo);
 
-        
+
         return prestamo;
     }
 }
