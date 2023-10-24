@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/prestamosgrupo")
@@ -59,5 +61,19 @@ public class PrestamosGrupoController {
         }
         return ResponseEntity.badRequest().build();
 
+    }
+
+    @PostMapping("/solicitar/{idUsuario}/grupo/{idGrupo}")
+    public ResponseEntity<?> solicitarPrestamoAGrupo(@PathVariable Integer idUsuario, @PathVariable Integer idGrupo,
+                                                     @RequestBody Map<String, Object> requestMap) {
+        BigDecimal monto = new BigDecimal(requestMap.get("monto").toString());
+        Integer plazoPrestamo = Integer.valueOf(requestMap.get("plazoPrestamo").toString());
+
+        try {
+            PrestamoGrupoEntity prestamo = prestamoGrupoService.solicitarPrestamo(idUsuario, idGrupo, monto, plazoPrestamo);
+            return ResponseEntity.ok(prestamo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

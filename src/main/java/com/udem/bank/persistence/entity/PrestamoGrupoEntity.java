@@ -1,5 +1,6 @@
 package com.udem.bank.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,9 @@ public class PrestamoGrupoEntity {
     @Column(name = "id_grupo", nullable = false)
     private Integer idGrupo;
 
+    @Column(name = "id_usuario", nullable = false)
+    private Integer idUsuario;
+
     @Column(name = "plazo_prestamo", nullable = false)
     private Integer plazoPrestamo;
 
@@ -44,6 +48,11 @@ public class PrestamoGrupoEntity {
     //Relaciones
     @ManyToOne
     @JoinColumn(name = "id_grupo", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonIgnore
     private GrupoAhorroEntity grupoAhorro;
 
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonIgnore
+    private UsuarioEntity usuarioPrestamo;
 }

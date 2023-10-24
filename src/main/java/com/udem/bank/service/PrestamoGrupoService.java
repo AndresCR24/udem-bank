@@ -6,6 +6,7 @@ import com.udem.bank.persistence.entity.UsuarioEntity;
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
 import com.udem.bank.persistence.repository.PrestamoGrupoRepository;
 import com.udem.bank.persistence.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,32 +53,43 @@ public class PrestamoGrupoService {
         this.prestamoGrupoRepository.deleteById(idPrestamoGrupo);
     }
 
-    //Solicitar un prestamo a un grupo de ahorro
-    public PrestamoGrupoEntity solicitarPrestamo(Integer idUsuario, Integer idGrupo, BigDecimal monto) {
-        // Verificar si el usuario y el grupo existen
+    @Transactional
+    public PrestamoGrupoEntity solicitarPrestamo(Integer idUsuario, Integer idGrupo, BigDecimal monto, Integer plazoPrestamo) {
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
         GrupoAhorroEntity grupo = grupoAhorroRepository.findById(idGrupo)
                 .orElseThrow(() -> new IllegalArgumentException("Grupo de ahorro no encontrado"));
 
         // Validar si el usuario pertenece al grupo
-        if (!grupo.getUsuarios().contains(usuario)) {
+        if (!usuario.getGrupoAhorro().contains(grupo)) {
             throw new IllegalArgumentException("El usuario no pertenece al grupo de ahorro");
         }
 
-        // Realizar otras validaciones según tus reglas de negocio
+        // Validar si el grupo tiene suficiente saldo para prestar
+        if (grupo.getSaldo().compareTo(monto) < 0) {
+            throw new IllegalArgumentException("El grupo de ahorro no tiene suficiente saldo para prestar");
+        }
 
-        // Crear la entidad de préstamo
+        // Propiedades del servicio
         PrestamoGrupoEntity prestamo = new PrestamoGrupoEntity();
-        //prestamo.setUsuario(usuario);
-        prestamo.setGrupoAhorro(grupo);
+        prestamo.setIdUsuario(usuario.getId());
+        prestamo.setIdGrupo(grupo.getId());
         prestamo.setMonto(monto);
-        //prestamo.setEstado("Pendiente"); // Puedes definir estados como "Pendiente", "Aprobado", "Rechazado", etc.
+        //El saldo que se el usuario debe pagar --> por ahora es el mismo que solicita
+        //Modificarlo para que cobre intereses del 3%
+        prestamo.setSaldoPendiente(monto);
+        //Se Obtiene del JSON la cantidad de meses a los que esta el plazo
+        prestamo.setPlazoPrestamo(plazoPrestamo);
 
-        // Guardar la solicitud de préstamo en la base de datos
+        //actualizar el saldo que tiene el grupo
+        grupo.setSaldo(grupo.getSaldo().subtract(monto));
+
+        //Actualizar el saldo del usuario que hace el prestamo
+        usuario.getCuentaAhorros().setSaldoActual(usuario.getCuentaAhorros().getSaldoActual().add(monto));
+        // Guardar las entidades actualizadas
         prestamoGrupoRepository.save(prestamo);
-
-        // Puedes realizar notificaciones aquí, por ejemplo, notificar al grupo sobre la solicitud.
+        grupoAhorroRepository.save(grupo);
 
         return prestamo;
     }

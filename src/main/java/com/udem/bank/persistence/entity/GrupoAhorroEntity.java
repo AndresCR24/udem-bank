@@ -43,6 +43,7 @@ public class GrupoAhorroEntity {
     private List<UsuarioEntity> usuarios;
 
     @OneToMany(mappedBy = "grupoAhorro")
+    @JsonIgnore
     private List<PrestamoGrupoEntity> prestamoGrupo;
 
     @OneToMany(mappedBy = "grupoAhorroInvitacion")
@@ -50,5 +51,6 @@ public class GrupoAhorroEntity {
     private List<InvitacionesEntity> invitacionesGrupo;
 
     @OneToMany(mappedBy = "grupoAhorroTransacciones")
+    @JsonIgnore
     private List<TransaccionesUsuarioEntity> transaccionesUsuarioGrupo;
 }
