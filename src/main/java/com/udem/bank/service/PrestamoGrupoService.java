@@ -91,6 +91,7 @@ public class PrestamoGrupoService {
         prestamoGrupoRepository.save(prestamo);
         grupoAhorroRepository.save(grupo);
 
+        
         return prestamo;
     }
 }
