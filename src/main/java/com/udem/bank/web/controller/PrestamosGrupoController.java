@@ -2,6 +2,7 @@ package com.udem.bank.web.controller;
 
 import com.udem.bank.persistence.entity.CuentaAhorrosEntity;
 import com.udem.bank.persistence.entity.PrestamoGrupoEntity;
+import com.udem.bank.persistence.entity.UsuarioEntity;
 import com.udem.bank.service.PrestamoGrupoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,39 +24,35 @@ public class PrestamosGrupoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PrestamoGrupoEntity>> getAll()
-    {
+    public ResponseEntity<List<PrestamoGrupoEntity>> getAll() {
         return ResponseEntity.ok(this.prestamoGrupoService.getAll());
     }
 
     @GetMapping("/{idPrestamoGrupo}")
-    public ResponseEntity<PrestamoGrupoEntity> get(@PathVariable int idPrestamoGrupo)
-    {
+    public ResponseEntity<PrestamoGrupoEntity> get(@PathVariable int idPrestamoGrupo) {
         return ResponseEntity.ok(this.prestamoGrupoService.get(idPrestamoGrupo));
     }
 
     @PostMapping
-    public ResponseEntity<PrestamoGrupoEntity> add(@RequestBody PrestamoGrupoEntity prestamoGrupo)
-    {
-        if (prestamoGrupo.getId() == null || !this.prestamoGrupoService.exists(prestamoGrupo.getId()))
-        {
+    public ResponseEntity<PrestamoGrupoEntity> add(@RequestBody PrestamoGrupoEntity prestamoGrupo) {
+        if (prestamoGrupo.getId() == null || !this.prestamoGrupoService.exists(prestamoGrupo.getId())) {
             return ResponseEntity.ok(this.prestamoGrupoService.save(prestamoGrupo));
         }
         return ResponseEntity.badRequest().build();
     }
+
     @PutMapping
-    public ResponseEntity<PrestamoGrupoEntity> update(@RequestBody PrestamoGrupoEntity prestamoGrupo)
-    {
-        if(prestamoGrupo.getId() != null && this.prestamoGrupoService.exists(prestamoGrupo.getId()))
-        {
+    public ResponseEntity<PrestamoGrupoEntity> update(@RequestBody PrestamoGrupoEntity prestamoGrupo) {
+        if (prestamoGrupo.getId() != null && this.prestamoGrupoService.exists(prestamoGrupo.getId())) {
             return ResponseEntity.ok(this.prestamoGrupoService.save(prestamoGrupo));
         }
 
         return ResponseEntity.badRequest().build();
     }
+
     @DeleteMapping
-    public ResponseEntity<Void> delete(@PathVariable int idPrestamoGrupo){
-        if (prestamoGrupoService.exists(idPrestamoGrupo)){
+    public ResponseEntity<Void> delete(@PathVariable int idPrestamoGrupo) {
+        if (prestamoGrupoService.exists(idPrestamoGrupo)) {
             prestamoGrupoService.deletePrestamoGrupo(idPrestamoGrupo);
             ResponseEntity.ok().build();
         }
@@ -76,4 +73,21 @@ public class PrestamosGrupoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    //Controlle de solicitar prestamo a un grupo de ahorro al que no se pertenece
+    @PostMapping("/solicitarAOtroGrupo/{idUsuario}/grupo/{idGrupo}")
+    public ResponseEntity<?> solicitarPrestamoAGrupoNoPertece(@PathVariable Integer idUsuario, @PathVariable Integer idGrupo,
+                                                              @RequestBody Map<String, Object> requestMap) {
+        BigDecimal monto = new BigDecimal(requestMap.get("monto").toString());
+        Integer plazoPrestamo = Integer.valueOf(requestMap.get("plazoPrestamo").toString());
+
+        try {
+            PrestamoGrupoEntity prestamo = prestamoGrupoService.solicitarPrestamoAotroGrupo(idUsuario, idGrupo, monto, plazoPrestamo);
+            return ResponseEntity.ok(prestamo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    //Pagar deuda --> Cambiado a TransaccionesUsuario
 }
