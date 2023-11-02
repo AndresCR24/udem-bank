@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class CuentaAhorrosService {
-
+    //Se inyecta la dependencia pero se coloca como constante para poder manejarlo desde el contructor
     private final CuentaAhorrosRepository cuentaAhorrosRepository;
 
     @Autowired

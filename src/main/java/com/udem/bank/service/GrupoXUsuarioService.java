@@ -1,13 +1,10 @@
 package com.udem.bank.service;
 
 import com.udem.bank.persistence.entity.GrupoAhorroEntity;
-import com.udem.bank.persistence.entity.PrestamoUsuarioEntity;
-import com.udem.bank.persistence.entity.TransaccionesUsuarioEntity;
 import com.udem.bank.persistence.entity.UsuarioEntity;
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
 import com.udem.bank.persistence.repository.InvitacionesRepository;
 import com.udem.bank.persistence.repository.UsuarioRepository;
-import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

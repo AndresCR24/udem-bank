@@ -58,6 +58,7 @@ public class PrestamoGrupoService {
     }
 
     //Prestamo si se pertece a un grupo de ahorro
+    /*
     @Transactional
     public PrestamoGrupoEntity solicitarPrestamo(Integer idUsuario, Integer idGrupo, BigDecimal monto, Integer plazoPrestamo) {
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
@@ -105,6 +106,82 @@ public class PrestamoGrupoService {
 
         return prestamo;
     }
+     */
+    //Detectar el mayor contribuidor
+    private UsuarioEntity findTopContributorByGrupoId(Integer grupoId) {
+        GrupoAhorroEntity grupo = grupoAhorroRepository.findById(grupoId)
+                .orElseThrow(() -> new IllegalArgumentException("Grupo de ahorro no encontrado"));
+
+        BigDecimal maxContribution = BigDecimal.ZERO;
+        UsuarioEntity topContributor = null;
+
+        for (UsuarioEntity usuario : grupo.getUsuarios()) {
+            BigDecimal totalContributed = transaccionesUsuarioRepository.totalContributionByUserToGroup(usuario.getId(), grupoId);
+            if (totalContributed.compareTo(maxContribution) > 0) {
+                maxContribution = totalContributed;
+                topContributor = usuario;
+            }
+        }
+
+        return topContributor;
+    }
+
+    public PrestamoGrupoEntity solicitarPrestamo(Integer idUsuario, Integer idGrupo, BigDecimal monto, Integer plazoPrestamo) {
+        UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        GrupoAhorroEntity grupo = grupoAhorroRepository.findById(idGrupo)
+                .orElseThrow(() -> new IllegalArgumentException("Grupo de ahorro no encontrado"));
+
+        if (plazoPrestamo < 2){
+            throw new IllegalArgumentException("El prestamo debe ser minimo de 2 meses");
+        }
+
+        // Validar si el usuario pertenece al grupo
+        if (!usuario.getGrupoAhorro().contains(grupo)) {
+            throw new IllegalArgumentException("El usuario no pertenece al grupo de ahorro");
+        }
+
+        // Validar si el grupo tiene suficiente saldo para prestar
+        if (grupo.getSaldo().compareTo(monto) < 0) {
+            throw new IllegalArgumentException("El grupo de ahorro no tiene suficiente saldo para prestar");
+        }
+
+        // Propiedades del servicio
+        BigDecimal porcentaje = new BigDecimal("0.03");
+
+        // Identificar al principal contribuyente del grupo
+        UsuarioEntity topContributor = findTopContributorByGrupoId(grupo.getId());
+
+        // Si el usuario solicitante es el principal contribuyente, reducir la comisión al 2%
+        if (usuario.getId().equals(topContributor.getId())) {
+            porcentaje = new BigDecimal("0.02");
+        }
+
+        BigDecimal montoAdicional = monto.multiply(porcentaje);
+        BigDecimal porcentajeAdicionalPrestamo = monto.add(montoAdicional);
+
+        PrestamoGrupoEntity prestamo = new PrestamoGrupoEntity();
+        prestamo.setIdUsuario(usuario.getId());
+        prestamo.setIdGrupo(grupo.getId());
+        prestamo.setMonto(monto);
+        prestamo.setSaldoPendiente(porcentajeAdicionalPrestamo);
+        prestamo.setPlazoPrestamo(plazoPrestamo);
+
+        //actualizar el saldo que tiene el grupo
+        grupo.setSaldo(grupo.getSaldo().subtract(monto));
+
+        //Actualizar el saldo del usuario que hace el prestamo
+        usuario.getCuentaAhorros().setSaldoActual(usuario.getCuentaAhorros().getSaldoActual().add(monto));
+
+        // Guardar las entidades actualizadas
+        prestamoGrupoRepository.save(prestamo);
+        grupoAhorroRepository.save(grupo);
+
+        return prestamo;
+    }
+
+
 
     //Prestamo si no se pertenece a un grupo de ahorro
     @Transactional

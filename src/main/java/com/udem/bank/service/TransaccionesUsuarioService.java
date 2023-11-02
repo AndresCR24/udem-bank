@@ -1,9 +1,7 @@
 package com.udem.bank.service;
 
 import com.udem.bank.persistence.entity.*;
-import com.udem.bank.persistence.exception.FondosInsuficientesException;
-import com.udem.bank.persistence.exception.GrupoNoEncontradoException;
-import com.udem.bank.persistence.exception.UsuarioNoEncontradoException;
+
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
 import com.udem.bank.persistence.repository.PrestamoGrupoRepository;
 import com.udem.bank.persistence.repository.TransaccionesUsuarioRepository;
