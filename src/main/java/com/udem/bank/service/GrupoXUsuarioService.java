@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class GrupoXUsuarioService {
-    private static final BigDecimal UDEMBANK_COMMISSION_RATE = new BigDecimal("0.005"); // 5% as a decimal
+    private static final BigDecimal COMMISSION_BANCO = new BigDecimal("0.005"); // 5% as a decimal
 
     private final UsuarioRepository usuarioRepository;
 
@@ -107,7 +107,7 @@ public class GrupoXUsuarioService {
 
         // 2. Distribuir el saldo entre sus usuarios
         BigDecimal totalBalance = grupo.getSaldo();
-        BigDecimal comisionUdem = totalBalance.multiply(UDEMBANK_COMMISSION_RATE);
+        BigDecimal comisionUdem = totalBalance.multiply(COMMISSION_BANCO);
         BigDecimal balanceToDistribute = totalBalance.subtract(comisionUdem);
 
         // Crear una lista temporal de usuarios para evitar ConcurrentModificationException

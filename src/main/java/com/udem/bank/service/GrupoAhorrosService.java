@@ -11,16 +11,18 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class GrupoAhorrosService {
     private static final BigDecimal UDEMBANK_COMMISSION_RATE = new BigDecimal("0.05"); // 5% as a decimal
+    //Excluir grupo de ahorro del banco
+    private static final List<Integer> excluirGrupoBanco = Arrays.asList(35, 36);
+
 
     private final GrupoAhorroRepository grupoAhorroRepository;
     private final UsuarioRepository usuarioRepository;
+
 
     @Autowired
     public GrupoAhorrosService(GrupoAhorroRepository grupoAhorroRepository, UsuarioRepository usuarioRepository) {
@@ -54,5 +56,26 @@ public class GrupoAhorrosService {
         this.grupoAhorroRepository.deleteById(idGrupo);
     }
 
+    //Bono del 10% al grupo de ahorro con mas dinero
 
+    public void aumentarSaldoAlGrupoConMasIngresos() {
+        // 1. Obtener el grupo de ahorro que más dinero ha ingresado y que no está en la lista de excluidos
+        GrupoAhorroEntity grupoConMasIngresos = grupoAhorroRepository
+                .findAll()
+                .stream()
+                .filter(grupo -> !excluirGrupoBanco.contains(grupo.getId()))  // filtrar los grupos excluidos
+                .max(Comparator.comparing(GrupoAhorroEntity::getSaldo))
+                .orElse(null);
+
+        if (grupoConMasIngresos != null) {
+            // 2. Aumentar el saldo del grupo en un 10%
+            BigDecimal saldoActual = grupoConMasIngresos.getSaldo();
+            // 10% de incremento gracias a las propiedades de BigDecimal
+            BigDecimal incremento = saldoActual.multiply(BigDecimal.valueOf(0.10));
+            grupoConMasIngresos.setSaldo(saldoActual.add(incremento));
+
+            // 3. Guardar el grupo de ahorro actualizado
+            grupoAhorroRepository.save(grupoConMasIngresos);
+        }
+    }
 }

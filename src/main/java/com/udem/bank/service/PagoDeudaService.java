@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class PagoDeudaService {
     //Creacion de una constante statica para poder entregar el porcentaje que le corresponde a UdemBank
-    private static final BigDecimal COMMISSION_RATE = new BigDecimal("0.01");
+    private static final BigDecimal COMMISSION_BANCO = new BigDecimal("0.01");
 
     private final PagoDeudaRepository pagoDeudaRepository;
     private final PrestamoGrupoRepository prestamoGrupoRepository;
@@ -78,7 +78,7 @@ public class PagoDeudaService {
         grupo.setSaldo(saldoActualGrupo);
 
         //Comsion para UdemBank
-        BigDecimal commission = montoPago.multiply(COMMISSION_RATE);
+        BigDecimal commission = montoPago.multiply(COMMISSION_BANCO);
         //Buscar por id el grupo de UdemBank para realizar el pago
         GrupoAhorroEntity udemBankGroup = grupoAhorroRepository.findById(36).orElseThrow(
                 () -> new RuntimeException("Grupo UdemBank no encontrado")

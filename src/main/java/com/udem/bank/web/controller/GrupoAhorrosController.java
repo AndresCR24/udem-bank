@@ -101,4 +101,11 @@ public class GrupoAhorrosController
 
     }
 
+    //Aumentar saldo 10% al grupo con mas ingreso
+    @PostMapping("/aumentarSaldoAlGrupoConMasIngresos")
+    public ResponseEntity<Void> aumentarSaldoAlGrupoConMasIngresos() {
+        grupoAhorrosService.aumentarSaldoAlGrupoConMasIngresos();
+        return ResponseEntity.ok().build();
+    }
+
 }
