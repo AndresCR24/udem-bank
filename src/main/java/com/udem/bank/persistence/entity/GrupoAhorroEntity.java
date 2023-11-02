@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "grupo_de_ahorro")
+@SQLDelete(sql = "UPDATE grupo_de_ahorro SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,7 +33,10 @@ public class GrupoAhorroEntity {
     @Column(nullable = false, columnDefinition = "DECIMAL(15,2)")
     private BigDecimal saldo;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted = false;
+
+    @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 

@@ -68,4 +68,7 @@ public class UsuarioEntity {
     @OneToMany(mappedBy = "usuarioPrestamo")
     @JsonIgnore
     private List<PrestamoGrupoEntity> prestamosUsuarioGrupo;
+
+    @OneToMany(mappedBy = "usuarioRelacion")
+    private List<PagoDeudaEntity> pagoDeudaRelacion;
 }

@@ -89,5 +89,21 @@ public class PrestamosGrupoController {
         }
     }
 
-    //Pagar deuda --> Cambiado a TransaccionesUsuario
+    /*
+    @PostMapping("/{idPrestamo}/pagar")
+    public ResponseEntity<?> pagarPrestamo(@PathVariable Integer idPrestamo, @RequestBody Map<String, Object> requestMap) {
+        Integer idUsuario = Integer.valueOf(requestMap.get("idUsuario").toString());
+        BigDecimal monto = new BigDecimal(requestMap.get("monto").toString());
+
+        try {
+            PrestamoGrupoEntity prestamo = prestamoGrupoService.pagarPrestamo(idUsuario, idPrestamo, monto);
+            return ResponseEntity.ok(prestamo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+     */
+
 }

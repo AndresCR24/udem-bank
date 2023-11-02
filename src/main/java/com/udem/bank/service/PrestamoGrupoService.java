@@ -155,5 +155,40 @@ public class PrestamoGrupoService {
         return prestamo;
     }
 
+    /*
+    @Transactional
+    public PrestamoGrupoEntity pagarPrestamo(Integer idUsuario, Integer idPrestamo, BigDecimal monto) {
+        // Encuentra el préstamo
+        PrestamoGrupoEntity prestamo = prestamoGrupoRepository.findById(idPrestamo)
+                .orElseThrow(() -> new IllegalArgumentException("Préstamo no encontrado"));
 
+        // Valida que el monto a pagar no sea mayor al monto pendiente del préstamo
+        if (monto.compareTo(prestamo.getSaldoPendiente()) > 0) {
+            throw new IllegalArgumentException("El monto a pagar no puede ser mayor al monto pendiente del préstamo");
+        }
+
+        // Resta el monto a pagar al monto pendiente
+        prestamo.setSaldoPendiente(prestamo.getSaldoPendiente().subtract(monto));
+        prestamoGrupoRepository.save(prestamo);
+
+        // Actualiza el saldo del grupo de ahorro
+        GrupoAhorroEntity grupo = grupoAhorroRepository.findById(prestamo.getIdGrupo())
+                .orElseThrow(() -> new IllegalArgumentException("Grupo de ahorro no encontrado"));
+        grupo.setSaldo(grupo.getSaldo().add(monto));
+        grupoAhorroRepository.save(grupo);
+
+        // Registra la transacción en el historial del usuario
+        TransaccionesUsuarioEntity transaccion = new TransaccionesUsuarioEntity();
+        transaccion.setIdUsuario(idUsuario);
+        transaccion.setIdGrupo(prestamo.getIdGrupo());
+        transaccion.setMonto(monto);
+        transaccion.setTipo("PAGO_PRESTAMO"); // Puedes usar otro identificador si prefieres
+        transaccion.setTipo("Pago de préstamo al grupo "); // Asumiendo que GrupoAhorroEntity tiene un campo nombre
+        transaccionesUsuarioRepository.save(transaccion);
+
+        return prestamo;
+
+    }
+
+     */
 }

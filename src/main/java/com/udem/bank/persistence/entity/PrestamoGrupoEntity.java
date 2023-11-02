@@ -36,8 +36,8 @@ public class PrestamoGrupoEntity {
 
     @Column(name = "saldo_pendiente", columnDefinition = "DECIMAL(15,2)")
     private BigDecimal saldoPendiente;
-    @Column(name = "created_at", nullable = false, updatable = false)
 
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 

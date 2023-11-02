@@ -5,6 +5,7 @@ import com.udem.bank.persistence.entity.GrupoAhorroEntity;
 import com.udem.bank.service.GrupoAhorrosService;
 import com.udem.bank.service.GrupoXUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +56,7 @@ public class GrupoAhorrosController
 
         return ResponseEntity.badRequest().build();
     }
-    @DeleteMapping("/{idGrupo}")
+   @DeleteMapping("/{idGrupo}")
     public ResponseEntity<Void>delete(@PathVariable int idGrupo){
         if (this.grupoAhorrosService.exists(idGrupo)){
             this.grupoXUsuarioService.deleteGrupoAhorro(idGrupo); //Modificacion al metodo delete original para
@@ -63,6 +64,8 @@ public class GrupoAhorrosController
         }
         return ResponseEntity.badRequest().build();
     }
+
+
 
     //Crear un grupo de ahorro con usuario
     @PostMapping("/crearConUsuario/{idUsuario}")
@@ -83,5 +86,19 @@ public class GrupoAhorrosController
         return ResponseEntity.ok("Usuario asociado exitosamente.");
     }
 
+    @DeleteMapping("/eliminar/{idGrupo}")
+    public ResponseEntity<String> eliminarGrupoAhorro(@PathVariable int idGrupo) {
+        System.out.println("Intentando eliminar el grupo con ID: " + idGrupo);  // Log statement
+        try {
+            grupoXUsuarioService.eliminarGrupoAhorro(idGrupo);
+            return new ResponseEntity<>("Grupo de ahorro eliminado con éxito.", HttpStatus.OK);
+
+
+        } catch (RuntimeException e) {
+            e.printStackTrace();  // This will print the exception stack trace
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
 }

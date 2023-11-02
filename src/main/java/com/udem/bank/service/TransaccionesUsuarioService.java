@@ -1,13 +1,11 @@
 package com.udem.bank.service;
 
-import com.udem.bank.persistence.entity.GrupoAhorroEntity;
-import com.udem.bank.persistence.entity.PrestamoUsuarioEntity;
-import com.udem.bank.persistence.entity.TransaccionesUsuarioEntity;
-import com.udem.bank.persistence.entity.UsuarioEntity;
+import com.udem.bank.persistence.entity.*;
 import com.udem.bank.persistence.exception.FondosInsuficientesException;
 import com.udem.bank.persistence.exception.GrupoNoEncontradoException;
 import com.udem.bank.persistence.exception.UsuarioNoEncontradoException;
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
+import com.udem.bank.persistence.repository.PrestamoGrupoRepository;
 import com.udem.bank.persistence.repository.TransaccionesUsuarioRepository;
 import com.udem.bank.persistence.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -23,12 +21,13 @@ public class TransaccionesUsuarioService {
     private final TransaccionesUsuarioRepository transaccionesUsuarioRepository;
     private final GrupoAhorroRepository grupoAhorroRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PrestamoGrupoRepository prestamoGrupoRepository;
 
-    @Autowired
-    public TransaccionesUsuarioService(TransaccionesUsuarioRepository transaccionesUsuarioRepository, GrupoAhorroRepository grupoAhorroRepository, UsuarioRepository usuarioRepository) {
+    public TransaccionesUsuarioService(TransaccionesUsuarioRepository transaccionesUsuarioRepository, GrupoAhorroRepository grupoAhorroRepository, UsuarioRepository usuarioRepository, PrestamoGrupoRepository prestamoGrupoRepository) {
         this.transaccionesUsuarioRepository = transaccionesUsuarioRepository;
         this.grupoAhorroRepository = grupoAhorroRepository;
         this.usuarioRepository = usuarioRepository;
+        this.prestamoGrupoRepository = prestamoGrupoRepository;
     }
 
     //Devolver lista de cuentas

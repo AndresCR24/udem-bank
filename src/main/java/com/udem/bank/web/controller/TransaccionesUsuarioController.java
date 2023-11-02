@@ -2,6 +2,7 @@ package com.udem.bank.web.controller;
 
 import com.udem.bank.persistence.entity.PrestamoGrupoEntity;
 import com.udem.bank.persistence.entity.TransaccionesUsuarioEntity;
+import com.udem.bank.service.PrestamoGrupoService;
 import com.udem.bank.service.TransaccionesUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,12 @@ import java.util.Map;
 public class TransaccionesUsuarioController {
 
     private final TransaccionesUsuarioService transaccionesUsuarioService;
+    private final PrestamoGrupoService prestamoGrupoService;
 
-    @Autowired
-    public TransaccionesUsuarioController(TransaccionesUsuarioService transaccionesUsuarioService) {
+    public TransaccionesUsuarioController(TransaccionesUsuarioService transaccionesUsuarioService, PrestamoGrupoService prestamoGrupoService) {
         this.transaccionesUsuarioService = transaccionesUsuarioService;
+        this.prestamoGrupoService = prestamoGrupoService;
     }
-
 
     @GetMapping
     public ResponseEntity<List<TransaccionesUsuarioEntity>> getAll()

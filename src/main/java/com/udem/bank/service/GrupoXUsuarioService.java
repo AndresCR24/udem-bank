@@ -7,13 +7,19 @@ import com.udem.bank.persistence.entity.UsuarioEntity;
 import com.udem.bank.persistence.repository.GrupoAhorroRepository;
 import com.udem.bank.persistence.repository.InvitacionesRepository;
 import com.udem.bank.persistence.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class GrupoXUsuarioService {
+    private static final BigDecimal UDEMBANK_COMMISSION_RATE = new BigDecimal("0.005"); // 5% as a decimal
 
     private final UsuarioRepository usuarioRepository;
 
@@ -89,7 +95,40 @@ public class GrupoXUsuarioService {
         return true;
     }
 
-    //Servicio para que un usuario acepte una invitacion
+    //Disolver grupo ahorro
+
+    public void eliminarGrupoAhorro(Integer idGrupo) {
+        // 1. Obtener el grupo de ahorro
+        GrupoAhorroEntity grupo = grupoAhorroRepository.findById(idGrupo)
+                .orElseThrow(() -> new RuntimeException("Grupo de ahorro no encontrado"));
+
+        // Inicializar manualmente la colección
+        Hibernate.initialize(grupo.getUsuarios());
+
+        // 2. Distribuir el saldo entre sus usuarios
+        BigDecimal totalBalance = grupo.getSaldo();
+        BigDecimal comisionUdem = totalBalance.multiply(UDEMBANK_COMMISSION_RATE);
+        BigDecimal balanceToDistribute = totalBalance.subtract(comisionUdem);
+
+        // Crear una lista temporal de usuarios para evitar ConcurrentModificationException
+        List<UsuarioEntity> tempUsuarios = new ArrayList<>(grupo.getUsuarios());
+        for (UsuarioEntity usuario : tempUsuarios) {
+            BigDecimal userBalance = usuario.getCuentaAhorros().getSaldoActual();
+            BigDecimal newBalance = userBalance.add(balanceToDistribute.divide(BigDecimal.valueOf(grupo.getUsuarios().size()), RoundingMode.HALF_UP));
+            usuario.getCuentaAhorros().setSaldoActual(newBalance);
+            usuarioRepository.save(usuario);  // Guardar el saldo actualizado del usuario
+        }
+
+        // 3. Añadir comisión al grupo de ahorro de UdemBank
+        GrupoAhorroEntity grupoUdemBank = grupoAhorroRepository.findById(36)
+                .orElseThrow(() -> new RuntimeException("Grupo de ahorro UdemBank no encontrado"));
+        grupoUdemBank.setSaldo(grupoUdemBank.getSaldo().add(comisionUdem));
+        grupoAhorroRepository.save(grupoUdemBank);
+
+        // 4. Eliminar el grupo
+        //grupoAhorroRepository.delete(grupo);
+        deleteGrupoAhorro(idGrupo);
+    }
 
 
 }
