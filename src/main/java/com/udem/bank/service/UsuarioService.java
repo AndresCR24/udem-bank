@@ -12,6 +12,8 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
+    //Constructor de aqui se inyectan las dependencias la etiqueta @Autowired le indica a Spring que debe inyectar desde
+    //aqui automaticamente
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;

@@ -12,9 +12,10 @@ import java.util.Optional;
 
 @Service
 public class PagoDeudaService {
-    //Creacion de una constante statica para poder entregar el porcentaje que le corresponde a UdemBank
+    //Creacion de una constante para la comision de UdemBank
     private static final BigDecimal COMMISSION_BANCO = new BigDecimal("0.01");
 
+    //Inyeccion de repositories para poder utilizar CRUD REPOSITORY y asi utilizar todos los metodos de Spring
     private final PagoDeudaRepository pagoDeudaRepository;
     private final PrestamoGrupoRepository prestamoGrupoRepository;
     private final GrupoAhorroRepository grupoAhorroRepository;
@@ -22,6 +23,8 @@ public class PagoDeudaService {
     private final PrestamoGrupoService prestamoGrupoService;
     private final UsuarioRepository usuarioRepository;
 
+    //Constructor de aqui se inyectan las dependencias la etiqueta @Autowired le indica a Spring que debe inyectar desde
+    //aqui automaticamente
     @Autowired
     public PagoDeudaService(PagoDeudaRepository pagoDeudaRepository, PrestamoGrupoRepository prestamoGrupoRepository, GrupoAhorroRepository grupoAhorroRepository, TransaccionesUsuarioRepository transaccionesUsuarioRepository, PrestamoGrupoService prestamoGrupoService, UsuarioRepository usuarioRepository) {
         this.pagoDeudaRepository = pagoDeudaRepository;
@@ -32,68 +35,77 @@ public class PagoDeudaService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    //Devolver lista de cuentas
+    //Metodo(servicio) para devolver lista de pagos
     public List<PagoDeudaEntity> getAll() {
         return this.pagoDeudaRepository.findAll();
     }
 
-    //Devolver usuario por su id
+    //Metodo(servicio) para devolver un pago por id
     public PagoDeudaEntity get(int idInvitacion) {
         return this.pagoDeudaRepository.findById(idInvitacion).orElse(null);
     }
 
-    //Pagar deuda
+    //Metodo(servicio) que le permite al usaurio pagar una deuda que tenga con un grupo de ahorro
     @Transactional
     public void pagarDeudaAGrupo(int idPrestamo, BigDecimal montoPago) {
-        // Retrieve the loan record
+
+        //consulta el registro del prestamo en la base de datos por su ID
         Optional<PrestamoGrupoEntity> prestamoOpt = prestamoGrupoRepository.findById(idPrestamo);
 
+        //Verificar si el ID del prestamo fue encontrado -> si no fue lanza una excepcion
         if (!prestamoOpt.isPresent()) {
             throw new RuntimeException("Préstamo no encontrado con el ID: " + idPrestamo);
         }
 
+        //Obtiene el registro del prestamo si si existe
         PrestamoGrupoEntity prestamo = prestamoOpt.get();
 
-        // Check user's balance
+        //Se obtiene el usuario asociado al prestamo
         UsuarioEntity usuario = prestamo.getUsuarioPrestamo();
+
+        //Se obtiene el saldo actual del usuario que esta asociado al prestamo
         BigDecimal saldoActualUsuario = usuario.getCuentaAhorros().getSaldoActual();
 
+        //Verifica si el usuario tiene el suficiente saldo para realizar el pago
         if(saldoActualUsuario.compareTo(montoPago) < 0) {
             throw new RuntimeException("Saldo insuficiente para realizar el pago.");
         }
 
-        // Deduct the amount paid from the pending balance of the loan
+        //Calcula el nuevo saldo pendiente con el que queda el usuario luego de realizar el pago
         BigDecimal saldoPendiente = prestamo.getSaldoPendiente();
         saldoPendiente = saldoPendiente.subtract(montoPago);
         prestamo.setSaldoPendiente(saldoPendiente);
 
-        // Deduct the amount paid from the user's balance
+        //Le resta la cantidad pagada al dinero que tiene el usario en su cuenta de ahorro
         saldoActualUsuario = saldoActualUsuario.subtract(montoPago);
         usuario.getCuentaAhorros().setSaldoActual(saldoActualUsuario);
 
-        // Add the payment amount to the group's balance
+        //Agrega el pago al saldo asociado al grupo de ahorro
         GrupoAhorroEntity grupo = prestamo.getGrupoAhorro();
         BigDecimal saldoActualGrupo = grupo.getSaldo();
         saldoActualGrupo = saldoActualGrupo.add(montoPago);
         grupo.setSaldo(saldoActualGrupo);
 
-        //Comsion para UdemBank
+        //Se calcula la comision que le corresponde a UdemBank por prestar el servicio
         BigDecimal commission = montoPago.multiply(COMMISSION_BANCO);
-        //Buscar por id el grupo de UdemBank para realizar el pago
-        GrupoAhorroEntity udemBankGroup = grupoAhorroRepository.findById(36).orElseThrow(
-                () -> new RuntimeException("Grupo UdemBank no encontrado")
-        );
+
+        //Busca el grupo que le corresponde a UdemBank por su ID
+        GrupoAhorroEntity udemBankGroup = grupoAhorroRepository.findById(36)
+                .orElseThrow(() -> new RuntimeException("Grupo UdemBank no encontrado"));
+
+        //Agrega la comision al saldo del grupo de ahorro de UdemBank
         BigDecimal saldoActualUdemBank = udemBankGroup.getSaldo();
         saldoActualUdemBank = saldoActualUdemBank.add(commission);
         udemBankGroup.setSaldo(saldoActualUdemBank);
 
+        //Crea el nuevo registro
         PagoDeudaEntity nuevoPago = new PagoDeudaEntity();
         nuevoPago.setIdUsuario(usuario.getId());
         nuevoPago.setIdPrestamo(idPrestamo);
         nuevoPago.setMonto(montoPago);
 
 
-        // guardando los datos
+        //Guarda todos los registros actualizados en la base de datos
         prestamoGrupoRepository.save(prestamo);
         usuarioRepository.save(usuario);
         grupoAhorroRepository.save(grupo);

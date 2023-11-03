@@ -16,10 +16,13 @@ import java.util.UUID;
 @Service
 public class InvitacionesService
 {
+    //Repositorios inyecatados que se utilizan para interactuar con CRUD REPOSITORY que maneja todos los metodos Spring
     private final InvitacionesRepository invitacionesRepository;
     private final UsuarioRepository usuarioRepository;
     private final GrupoAhorroRepository grupoAhorroRepository;
 
+    //Constructor de aqui se inyectan las dependencias la etiqueta @Autowired le indica a Spring que debe inyectar desde
+    //aqui automaticamente
     @Autowired
     public InvitacionesService(InvitacionesRepository invitacionesRepository, UsuarioRepository usuarioRepository, GrupoAhorroRepository grupoAhorroRepository) {
         this.invitacionesRepository = invitacionesRepository;
@@ -27,32 +30,36 @@ public class InvitacionesService
         this.grupoAhorroRepository = grupoAhorroRepository;
     }
 
-    //Devolver lista de cuentas
+    //Metodo que devuelve todas las invitaciones generadas
     public List<InvitacionesEntity> getAll()
     {
         return this.invitacionesRepository.findAll();
     }
 
-    //Devolver usuario por su id
+    //Metodo que devuelve la invitacion por su ID
     public InvitacionesEntity get(int idInvitacion)
     {
         return this.invitacionesRepository.findById(idInvitacion).orElse(null);
     }
 
+    //Metodo para guardar o actualizar una invitación
     public InvitacionesEntity save(InvitacionesEntity invitaciones)
     {
         return this.invitacionesRepository.save(invitaciones);
     }
+
     //Validar si un id existe
     public boolean exists(int idInvitaciones)
     {
         return this.invitacionesRepository.existsById(idInvitaciones);
     }
 
+    //Metodo que elimina una invitación basada en su ID.
     public void delete(int idInvitacion){
         this.invitacionesRepository.deleteById(idInvitacion);
     }
-    //Crear invitacion con usuario
+
+    //Metodo para Crear invitacion con usuario con limite de 2 invitaciones por grupo
     public InvitacionesEntity crearInvitacion(Integer idUsuario, Integer idGrupo) {
         long count = invitacionesRepository.countByUsuarioInvitacionesIdAndGrupoAhorroInvitacionId(idUsuario, idGrupo);
         if(count >= 2) {
@@ -71,8 +78,7 @@ public class InvitacionesService
         return invitacionesRepository.save(nuevaInvitacion);
     }
 
-    //Usar las invitaciones para entrar a un grupo
-
+    //Metodo(servicio) para usar las invitaciones y entrar a un grupo de ahorro
     public boolean unirseAlGrupo(String codigoInvitacion, Integer idUsuario) {
         Optional<InvitacionesEntity> optionalInvitacion = invitacionesRepository.findByCodigoInvitacion(codigoInvitacion);
 

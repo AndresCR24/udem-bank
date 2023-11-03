@@ -21,6 +21,9 @@ public class TransaccionesUsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PrestamoGrupoRepository prestamoGrupoRepository;
 
+    //Constructor de aqui se inyectan las dependencias la etiqueta @Autowired le indica a Spring que debe inyectar desde
+    //aqui automaticamente
+    @Autowired
     public TransaccionesUsuarioService(TransaccionesUsuarioRepository transaccionesUsuarioRepository, GrupoAhorroRepository grupoAhorroRepository, UsuarioRepository usuarioRepository, PrestamoGrupoRepository prestamoGrupoRepository) {
         this.transaccionesUsuarioRepository = transaccionesUsuarioRepository;
         this.grupoAhorroRepository = grupoAhorroRepository;

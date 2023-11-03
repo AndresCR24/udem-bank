@@ -18,11 +18,14 @@ import java.util.List;
 @Service
 public class PrestamoGrupoService {
 
+    //Repositorios inyectados para poder utilizar CRUD REPOSITORY  de Spring y tener todos los metodos que este nos provee
     private final PrestamoGrupoRepository prestamoGrupoRepository;
     private final UsuarioRepository usuarioRepository;
     private final GrupoAhorroRepository grupoAhorroRepository;
     private final TransaccionesUsuarioRepository transaccionesUsuarioRepository;
 
+    //Constructor de aqui se inyectan las dependencias la etiqueta @Autowired le indica a Spring que debe inyectar desde
+    //aqui automaticamente
     @Autowired
     public PrestamoGrupoService(PrestamoGrupoRepository prestamoGrupoRepository, UsuarioRepository usuarioRepository, GrupoAhorroRepository grupoAhorroRepository, TransaccionesUsuarioRepository transaccionesUsuarioRepository) {
         this.prestamoGrupoRepository = prestamoGrupoRepository;
@@ -31,28 +34,31 @@ public class PrestamoGrupoService {
         this.transaccionesUsuarioRepository = transaccionesUsuarioRepository;
     }
 
-    //Devolver lista de cuentas
+    //Devuelve todos los registros de préstamos.
     public List<PrestamoGrupoEntity> getAll()
     {
         return this.prestamoGrupoRepository.findAll();
     }
 
-    //Devolver usuario por su id
+    //Devolver un registro de préstamo por su ID
     public PrestamoGrupoEntity get(int idGrupo)
     {
         return this.prestamoGrupoRepository.findById(idGrupo).orElse(null);
     }
 
+    //Guarda o actualiza un prestamo a un grupo
     public PrestamoGrupoEntity save(PrestamoGrupoEntity prestamoGrupo)
     {
         return this.prestamoGrupoRepository.save(prestamoGrupo);
     }
+
     //Validar si un id existe
     public boolean exists(int idPrestamo)
     {
         return this.prestamoGrupoRepository.existsById(idPrestamo);
     }
 
+    //ELimina un registro de prestamo por su id
     public void deletePrestamoGrupo(int idPrestamoGrupo){
         this.prestamoGrupoRepository.deleteById(idPrestamoGrupo);
     }
@@ -107,22 +113,30 @@ public class PrestamoGrupoService {
         return prestamo;
     }
      */
+
     //Detectar el mayor contribuidor
     private UsuarioEntity findTopContributorByGrupoId(Integer grupoId) {
+        //Busca el registro en la base de datos por su ID
         GrupoAhorroEntity grupo = grupoAhorroRepository.findById(grupoId)
+                //Si no lo encuentra lanza la excepcion
                 .orElseThrow(() -> new IllegalArgumentException("Grupo de ahorro no encontrado"));
 
+        //Variable para rastrear cual es la maxima contribucion encontrada hasta el momento en un grupo
         BigDecimal maxContribution = BigDecimal.ZERO;
+        //Variable que guarda el usuario con la maxima contribucion
         UsuarioEntity topContributor = null;
 
+        //Se recorren todos los usuarios asociados al grupo
         for (UsuarioEntity usuario : grupo.getUsuarios()) {
+            //Obtener la contribucion total del usaurio actual al grupo
             BigDecimal totalContributed = transaccionesUsuarioRepository.totalContributionByUserToGroup(usuario.getId(), grupoId);
             if (totalContributed.compareTo(maxContribution) > 0) {
-                maxContribution = totalContributed;
-                topContributor = usuario;
+                maxContribution = totalContributed; //actualiza la maxima contribucion
+                topContributor = usuario; //Asiga al usuario actual como mayor contribuyente
             }
         }
 
+        //AL final retorna el usuario que mas a contribuido al grupo
         return topContributor;
     }
 
