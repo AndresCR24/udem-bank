@@ -53,40 +53,7 @@ public class TransaccionesUsuarioService {
     public void deleteTransaccion(int idTransaccion) {
         this.transaccionesUsuarioRepository.deleteById(idTransaccion);
     }
-    //Metodo anterior que genera fallos lo dejo de guia pra hacer futuros metodos (servicios) que pueden ser utiles
-    /*
-        @Transactional
-        public TransaccionesUsuarioEntity depositarEnGrupoAhorro(int idUsuario, int idGrupoAhorro, BigDecimal monto)
-                throws UsuarioNoEncontradoException, GrupoNoEncontradoException, FondosInsuficientesException {
 
-            // Validar si el usuario existe
-            UsuarioEntity usuario = usuarioRepository.findById(idUsuario)
-                    .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado"));
-
-            // Validar si el grupo de ahorro existe
-            GrupoAhorroEntity grupoAhorro = grupoAhorroRepository.findById(idGrupoAhorro)
-                    .orElseThrow(() -> new GrupoNoEncontradoException("Grupo de ahorro no encontrado"));
-
-            // Crear una nueva transacción de usuario
-            TransaccionesUsuarioEntity nuevaTransaccion = new TransaccionesUsuarioEntity();
-            nuevaTransaccion.setUsuarioTransacciones(usuario);
-            nuevaTransaccion.setGrupoAhorroTransacciones(grupoAhorro); // Asumiendo que tienes esta relación en tu entidad
-            nuevaTransaccion.setMonto(monto);
-            // Asumiendo que tienes algún tipo de propiedad para indicar el tipo de transacción
-            // nuevaTransaccion.setTipoTransaccion(TipoTransaccion.DEPOSITO);
-
-            // Aquí podrías insertar lógicas adicionales como verificar si el usuario tiene suficientes fondos, etc.
-
-            // Actualizar el saldo del grupo de ahorro. Esto presupone que tienes un método en tu entidad GrupoAhorroEntity para manejar el saldo.
-            GrupoAhorrosService.addFondos(monto); // Este método debería implementarse en tu entidad para ajustar el saldo
-
-            // Guardar las entidades actualizadas; el manejo de transacciones debería asegurar la integridad de este proceso
-            transaccionesUsuarioRepository.save(nuevaTransaccion);
-            grupoAhorroRepository.save(grupoAhorro);
-
-            return nuevaTransaccion;
-        }
-        */
     @Transactional
     public TransaccionesUsuarioEntity registrarDepositoAGrupo(Integer idUsuario, Integer idGrupo, BigDecimal monto) {
 
