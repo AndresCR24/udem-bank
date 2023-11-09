@@ -20,7 +20,7 @@ public class GrupoAhorrosService {
     private static final BigDecimal COMISION_UDEMBANK = new BigDecimal("0.05"); // 5% as a decimal
 
     //Excluir grupo de ahorro del banco
-    private static final List<Integer> excluirGrupoBanco = Arrays.asList(35, 36);
+    private static final List<Integer> excluirGrupoBanco = Arrays.asList(1);
 
     //Aqui se inyectan las dependencias -> en este caso son interfaces que extienden de LiscrudRepository de spring
     //Gracias a esto podemos manejar todas las operaciones CRUD de SPRING FRAMEWORK

@@ -45,9 +45,6 @@ public class UsuarioEntity {
     @JoinColumn(name = "id_cuenta_ahorros", referencedColumnName = "id", insertable = false, updatable = false, unique = true)
     private CuentaAhorrosEntity cuentaAhorros;
 
-    @OneToMany(mappedBy = "usuarioPrestamo")
-    private List<PrestamoUsuarioEntity> prestamosUsuario;
-
     @OneToMany(mappedBy = "usuarioTransacciones")
     @JsonIgnore
     private List<TransaccionesUsuarioEntity> transaccionesUsuario;

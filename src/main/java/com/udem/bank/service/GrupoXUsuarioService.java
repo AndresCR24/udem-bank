@@ -129,7 +129,7 @@ public class GrupoXUsuarioService {
 
         //Se busca el grupo de ahorro de UdemBank por su ID para que se le pase la comision correspondiente al saldo
         //de su grupo de ahorro
-        GrupoAhorroEntity grupoUdemBank = grupoAhorroRepository.findById(36)
+        GrupoAhorroEntity grupoUdemBank = grupoAhorroRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Grupo de ahorro UdemBank no encontrado"));
         grupoUdemBank.setSaldo(grupoUdemBank.getSaldo().add(comisionUdem));
         grupoAhorroRepository.save(grupoUdemBank);//Se guarda el saldo actualizado
