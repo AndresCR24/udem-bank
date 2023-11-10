@@ -42,11 +42,13 @@ public class InvitacionesServiceTest {
 
     @Test
     public void testGetAll() {
+        // Configuración del escenario para las pruebas
         List<InvitacionesEntity> invitacionesList = new ArrayList<>();
+        // Ejecución de la prueba
         when(invitacionesRepository.findAll()).thenReturn(invitacionesList);
 
         List<InvitacionesEntity> result = invitacionesService.getAll();
-
+        // Verificación si la prueba esta funcionando
         assertEquals(invitacionesList, result);
     }
 

@@ -27,11 +27,13 @@ public class CuentaAhorrosServiceTest {
 
     @Test
     public void testGetAll() {
+        // Configuración del escenario para las pruebas
         List<CuentaAhorrosEntity> cuentasAhorrosList = new ArrayList<>();
+        // Ejecución de la prueba
         when(cuentaAhorrosRepository.findAll()).thenReturn(cuentasAhorrosList);
 
         List<CuentaAhorrosEntity> result = cuentaAhorrosService.getAll();
-
+        // Verificación si la prueba esta funcionando
         assertEquals(cuentasAhorrosList, result);
     }
 

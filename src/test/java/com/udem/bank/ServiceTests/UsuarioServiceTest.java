@@ -31,10 +31,13 @@ public class UsuarioServiceTest {
 
     @Test
     public void testGetAll() {
+        // Configuración del escenario para las pruebas
         List<UsuarioEntity> usuariosList = new ArrayList<>();
         when(usuarioRepository.findAll()).thenReturn(usuariosList);
+        // Ejecución de la prueba
 
         List<UsuarioEntity> result = usuarioService.getAll();
+        // Verificación si la prueba esta funcionando
 
         assertEquals(usuariosList, result);
     }

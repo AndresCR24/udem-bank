@@ -90,7 +90,7 @@ public class PagoDeudaService {
         BigDecimal commission = montoPago.multiply(COMMISSION_BANCO);
 
         //Busca el grupo que le corresponde a UdemBank por su ID
-        GrupoAhorroEntity udemBankGroup = grupoAhorroRepository.findById(36)
+        GrupoAhorroEntity udemBankGroup = grupoAhorroRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Grupo UdemBank no encontrado"));
 
         //Agrega la comision al saldo del grupo de ahorro de UdemBank

@@ -42,11 +42,12 @@ public class TransaccionesUsuarioServiceTest {
 
     @Test
     public void testGetAll() {
+        // Configuración del escenario para las pruebas
         List<TransaccionesUsuarioEntity> transaccionesList = new ArrayList<>();
         when(transaccionesUsuarioRepository.findAll()).thenReturn(transaccionesList);
-
+        // Ejecución de la prueba
         List<TransaccionesUsuarioEntity> result = transaccionesUsuarioService.getAll();
-
+        // Verificación si la prueba esta funcionando
         assertEquals(transaccionesList, result);
     }
 
