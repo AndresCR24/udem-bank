@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: udem-bank-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123.
+      MYSQL_DATABASE: udem_bank
+      MYSQL_USER: udem
+      MYSQL_PASSWORD: udem123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - udem-net
+
+  app:
+    image: mi-aplicacion
+    container_name: udem-bank-app
+    depends_on:
+      - db
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/udem_bank?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: udem
+      SPRING_DATASOURCE_PASSWORD: udem123
+    ports:
+      - "8080:8080"
+    networks:
+      - udem-net
+
+volumes:
+  mysql_data:
+
+networks:
+  udem-net:
