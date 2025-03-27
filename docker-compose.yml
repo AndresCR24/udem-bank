@@ -20,11 +20,11 @@ services:
   app:
     image: mi-aplicacion
     container_name: udem-bank-app
+    restart: always
     depends_on:
       - db
-    restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/udem_bank?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/udem_bank?createDatabaseIfNotExist=true&autoReconnect=true
       SPRING_DATASOURCE_USERNAME: udem
       SPRING_DATASOURCE_PASSWORD: udem123
     ports:
